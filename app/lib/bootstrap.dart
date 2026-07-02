@@ -10,6 +10,9 @@ import 'core/logging/app_logger.dart';
 import 'core/storage/key_value_store.dart';
 import 'core/storage/storage_initializer.dart';
 import 'core/storage/storage_providers.dart';
+import 'core/network/auth_token_store.dart';
+import 'core/session/auth_status.dart';
+import 'features/auth/data/auth_providers.dart';
 
 /// Composition root.
 ///
@@ -50,6 +53,14 @@ Future<void> bootstrap() async {
                 .overrideWithValue(HiveKeyValueStore(boxes.devices)),
             transferHistoryStoreProvider
                 .overrideWithValue(HiveKeyValueStore(boxes.transferHistory)),
+            // Plug the auth feature into the core seams:
+            authTokenStoreProvider
+                .overrideWith((ref) => ref.watch(apiAuthTokenStoreProvider)),
+            authStatusProvider.overrideWith(
+              (ref) => ref.watch(
+                authControllerProvider.select((s) => s.status),
+              ),
+            ),
           ],
           child: const MoidShareApp(),
         ),

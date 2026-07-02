@@ -6,6 +6,10 @@ import '../session/auth_status.dart';
 import '../../app/screens/home_screen.dart';
 import '../../app/screens/route_error_screen.dart';
 import '../../app/screens/welcome_screen.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/signup_screen.dart';
+import '../../features/auth/presentation/screens/splash_screen.dart';
 import 'route_paths.dart';
 
 /// Bridges a Riverpod provider to a [Listenable] so GoRouter re-evaluates its
@@ -28,24 +32,45 @@ class _RouterRefreshNotifier extends ChangeNotifier {
   }
 }
 
-/// The application router.
+/// The application router with an auth-aware redirect guard.
 ///
-/// A single [GoRouter] configured with a guard that reads [authStatusProvider].
-/// The guard is the only place navigation authorization lives, keeping screens
-/// free of auth branching.
+/// Guard rules:
+///   * status `unknown`  → hold on splash while the session restores;
+///   * signed out         → allow only [unauthenticatedRoutes], else → welcome;
+///   * signed in          → bounce off splash/auth routes → home.
 final goRouterProvider = Provider<GoRouter>((ref) {
   final refresh = _RouterRefreshNotifier(ref);
   ref.onDispose(refresh.dispose);
 
   return GoRouter(
-    initialLocation: RoutePaths.welcome,
+    initialLocation: RoutePaths.splash,
     refreshListenable: refresh,
     debugLogDiagnostics: kDebugMode,
     routes: [
       GoRoute(
+        path: RoutePaths.splash,
+        name: RouteNames.splash,
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
         path: RoutePaths.welcome,
         name: RouteNames.welcome,
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.login,
+        name: RouteNames.login,
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.signup,
+        name: RouteNames.signup,
+        builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.forgotPassword,
+        name: RouteNames.forgotPassword,
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
         path: RoutePaths.home,
@@ -57,19 +82,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         RouteErrorScreen(error: state.error?.toString()),
     redirect: (context, state) {
       final status = ref.read(authStatusProvider);
-      final onWelcome = state.matchedLocation == RoutePaths.welcome;
+      final location = state.matchedLocation;
+      final onSplash = location == RoutePaths.splash;
 
-      // Still resolving the session — let the current location render.
-      if (status == AuthStatus.unknown) return null;
+      // Session still resolving: keep the user on splash.
+      if (status == AuthStatus.unknown) {
+        return onSplash ? null : RoutePaths.splash;
+      }
 
       final loggedIn = status == AuthStatus.authenticated;
+      final onAuthRoute = unauthenticatedRoutes.contains(location);
 
-      // Not signed in and trying to reach a protected route -> welcome.
-      if (!loggedIn && !onWelcome) return RoutePaths.welcome;
+      if (!loggedIn) {
+        // Signed out: only auth routes allowed.
+        return onAuthRoute ? null : RoutePaths.welcome;
+      }
 
-      // Signed in but sitting on welcome -> home.
-      if (loggedIn && onWelcome) return RoutePaths.home;
-
+      // Signed in: never sit on splash or an auth route.
+      if (onSplash || onAuthRoute) return RoutePaths.home;
       return null;
     },
   );

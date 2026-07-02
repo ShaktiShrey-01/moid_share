@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../core/router/route_paths.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/brand_mark.dart';
 
-/// Unauthenticated landing surface.
-///
-/// This is a foundation placeholder: it demonstrates the theme system, the
-/// persisted theme toggle, and the router guard's unauthenticated target. The
-/// sign-in / create-account actions are wired to the auth feature in a later
-/// step (disabled here so intent is clear).
+/// Unauthenticated landing surface with entry points into the auth flows and a
+/// persisted theme toggle.
 class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});
 
@@ -44,10 +42,7 @@ class WelcomeScreen extends ConsumerWidget {
               const Spacer(),
               const BrandMark(size: 84),
               const SizedBox(height: AppSpacing.xl),
-              Text(
-                AppConstants.appName,
-                style: theme.textTheme.displaySmall,
-              ),
+              Text(AppConstants.appName, style: theme.textTheme.displaySmall),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 'Secure, high-speed sharing and clipboard sync between your '
@@ -58,12 +53,12 @@ class WelcomeScreen extends ConsumerWidget {
               ),
               const Spacer(),
               FilledButton(
-                onPressed: () => _notImplemented(context, 'Sign in'),
+                onPressed: () => context.pushNamed(RouteNames.login),
                 child: const Text('Sign in'),
               ),
               const SizedBox(height: AppSpacing.md),
               OutlinedButton(
-                onPressed: () => _notImplemented(context, 'Create account'),
+                onPressed: () => context.pushNamed(RouteNames.signup),
                 child: const Text('Create account'),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -72,13 +67,5 @@ class WelcomeScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  void _notImplemented(BuildContext context, String action) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text('$action arrives with the auth feature.')),
-      );
   }
 }

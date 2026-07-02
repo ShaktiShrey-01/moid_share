@@ -41,13 +41,4 @@ void main() {
     expect(container.read(themeModeControllerProvider), ThemeMode.dark);
   });
 
-  testWidgets('tapping Sign in shows a not-implemented snackbar',
-      (tester) async {
-    await tester.pumpWidget(harness());
-
-    await tester.tap(find.text('Sign in'));
-    await tester.pump();
-
-    expect(find.textContaining('auth feature'), findsOneWidget);
-  });
 }
