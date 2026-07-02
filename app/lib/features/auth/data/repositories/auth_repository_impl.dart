@@ -51,6 +51,13 @@ class AuthRepositoryImpl implements AuthRepository {
       _guard(() => _remote.forgotPassword(email: email));
 
   @override
+  Future<Result<void>> resetPassword({
+    required String token,
+    required String password,
+  }) =>
+      _guard(() => _remote.resetPassword(token: token, password: password));
+
+  @override
   Future<Result<void>> logout({required String refreshToken}) =>
       _guard(() => _remote.logout(refreshToken: refreshToken));
 }

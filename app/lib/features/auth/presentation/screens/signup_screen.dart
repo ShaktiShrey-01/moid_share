@@ -6,6 +6,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../data/auth_providers.dart';
 import '../widgets/auth_error_banner.dart';
 import '../widgets/auth_text_field.dart';
+import '../widgets/social_auth.dart';
 import '../widgets/auth_validators.dart';
 
 /// Account creation. On success the router guard redirects to home.
@@ -115,6 +116,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2.5),
                       )
                     : const Text('Create account'),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              const OrDivider(),
+              const SizedBox(height: AppSpacing.lg),
+              GoogleSignInButton(
+                enabled: !state.submitting,
+                onTap: () =>
+                    ref.read(authControllerProvider.notifier).signInWithGoogle(),
               ),
               const SizedBox(height: AppSpacing.lg),
               Row(

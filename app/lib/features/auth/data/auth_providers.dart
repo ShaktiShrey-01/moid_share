@@ -5,6 +5,7 @@ import '../../../core/network/auth_token_store.dart';
 import '../../../core/network/network_providers.dart';
 import '../../../core/storage/storage_providers.dart';
 import '../domain/repositories/auth_repository.dart';
+import 'google_auth_service.dart';
 import '../presentation/controllers/auth_controller.dart';
 import '../presentation/controllers/auth_state.dart';
 import 'api_auth_token_store.dart';
@@ -39,6 +40,13 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>(
 
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepositoryImpl(ref.watch(authRemoteDataSourceProvider)),
+);
+
+/// Google sign-in flow (native ID-token acquisition).
+final googleAuthServiceProvider = Provider<GoogleAuthService>(
+  (ref) => GoogleSignInService(
+    ref.watch(appEnvironmentProvider).googleServerClientId,
+  ),
 );
 
 /// The concrete [AuthTokenStore] for the network layer. Bootstrap overrides the

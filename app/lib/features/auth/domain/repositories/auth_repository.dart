@@ -25,6 +25,12 @@ abstract interface class AuthRepository {
   /// Requests a password-reset email. Always succeeds (no enumeration).
   Future<Result<void>> forgotPassword({required String email});
 
+  /// Completes a password reset using the emailed token.
+  Future<Result<void>> resetPassword({
+    required String token,
+    required String password,
+  });
+
   /// Revokes the current refresh session server-side.
   Future<Result<void>> logout({required String refreshToken});
 }

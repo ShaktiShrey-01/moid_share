@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
 import '../../../../core/session/auth_status.dart';
@@ -57,6 +58,29 @@ class AuthController extends Notifier<AuthState> {
         () => ref.read(authRepositoryProvider).googleSignIn(idToken: idToken),
       );
 
+  /// Runs the native Google flow, then exchanges the ID token for a session.
+  Future<bool> signInWithGoogle() async {
+    state = state.copyWith(submitting: true, clearError: true);
+    final String idToken;
+    try {
+      idToken = await ref.read(googleAuthServiceProvider).obtainIdToken();
+    } on CancelledException {
+      // User aborted — not an error.
+      if (ref.mounted) state = state.copyWith(submitting: false);
+      return false;
+    } on AppException catch (e) {
+      if (ref.mounted) {
+        state = state.copyWith(
+          submitting: false,
+          errorMessage: e.message ?? 'Google sign-in failed',
+        );
+      }
+      return false;
+    }
+    if (!ref.mounted) return false;
+    return googleSignIn(idToken);
+  }
+
   /// Requests a password-reset email. Always reports success (no enumeration).
   Future<void> forgotPassword(String email) async {
     state = state.copyWith(submitting: true, clearError: true, clearInfo: true);
@@ -71,6 +95,26 @@ class AuthController extends Notifier<AuthState> {
         );
       case ResultFailure(:final failure):
         state = state.copyWith(submitting: false, errorMessage: failure.message);
+    }
+  }
+
+  /// Completes a password reset. Returns true on success.
+  Future<bool> resetPassword(String token, String password) async {
+    state = state.copyWith(submitting: true, clearError: true, clearInfo: true);
+    final result = await ref
+        .read(authRepositoryProvider)
+        .resetPassword(token: token, password: password);
+    if (!ref.mounted) return false;
+    switch (result) {
+      case Success():
+        state = state.copyWith(
+          submitting: false,
+          infoMessage: 'Password updated. Please sign in.',
+        );
+        return true;
+      case ResultFailure(:final failure):
+        state = state.copyWith(submitting: false, errorMessage: failure.message);
+        return false;
     }
   }
 

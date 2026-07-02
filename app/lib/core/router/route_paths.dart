@@ -10,6 +10,7 @@ abstract final class RoutePaths {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
+  static const String resetPassword = '/reset-password';
   static const String home = '/home';
 }
 
@@ -21,6 +22,7 @@ abstract final class RouteNames {
   static const String login = 'login';
   static const String signup = 'signup';
   static const String forgotPassword = 'forgotPassword';
+  static const String resetPassword = 'resetPassword';
   static const String home = 'home';
 }
 
@@ -30,4 +32,5 @@ const Set<String> unauthenticatedRoutes = {
   RoutePaths.login,
   RoutePaths.signup,
   RoutePaths.forgotPassword,
+  RoutePaths.resetPassword,
 };

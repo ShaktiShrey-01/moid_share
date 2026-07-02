@@ -27,6 +27,7 @@ final class AppEnvironment {
     required this.connectTimeout,
     required this.receiveTimeout,
     required this.enableNetworkLogging,
+    required this.googleServerClientId,
   });
 
   /// The active configuration for this build. Initialized once in [bootstrap].
@@ -45,6 +46,10 @@ final class AppEnvironment {
 
   /// Whether to log HTTP traffic (never enable in `prod`).
   final bool enableNetworkLogging;
+
+  /// Google OAuth **web/server** client id used to obtain an ID token whose
+  /// audience matches the backend. Empty disables Google sign-in on the client.
+  final String googleServerClientId;
 
   bool get isProd => flavor == Flavor.prod;
   bool get isDev => flavor == Flavor.dev;
@@ -86,6 +91,10 @@ final class AppEnvironment {
       ),
       enableNetworkLogging:
           flavor != Flavor.prod, // logging off in production by default
+      googleServerClientId: const String.fromEnvironment(
+        'GOOGLE_SERVER_CLIENT_ID',
+        defaultValue: '',
+      ),
     );
   }
 }

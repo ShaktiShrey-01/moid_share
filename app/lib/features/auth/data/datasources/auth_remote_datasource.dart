@@ -59,6 +59,16 @@ class AuthRemoteDataSource {
     );
   }
 
+  Future<void> resetPassword({
+    required String token,
+    required String password,
+  }) async {
+    await _api.post<Map<String, dynamic>>(
+      '/auth/reset-password',
+      data: {'token': token, 'password': password},
+    );
+  }
+
   Future<void> logout({required String refreshToken}) async {
     await _api.post<Map<String, dynamic>>(
       '/auth/logout',

@@ -46,6 +46,13 @@ class _FakeAuthRepository implements AuthRepository {
       const Result.success(null);
 
   @override
+  Future<Result<void>> resetPassword({
+    required String token,
+    required String password,
+  }) async =>
+      const Result.success(null);
+
+  @override
   Future<Result<void>> logout({required String refreshToken}) async =>
       const Result.success(null);
 }

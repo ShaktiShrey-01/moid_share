@@ -7,6 +7,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../data/auth_providers.dart';
 import '../widgets/auth_error_banner.dart';
 import '../widgets/auth_text_field.dart';
+import '../widgets/social_auth.dart';
 import '../widgets/auth_validators.dart';
 
 /// Email/password sign-in. On success the router guard redirects to home, so
@@ -112,6 +113,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2.5),
                       )
                     : const Text('Sign in'),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              const OrDivider(),
+              const SizedBox(height: AppSpacing.lg),
+              GoogleSignInButton(
+                enabled: !state.submitting,
+                onTap: () =>
+                    ref.read(authControllerProvider.notifier).signInWithGoogle(),
               ),
               const SizedBox(height: AppSpacing.lg),
               Row(
