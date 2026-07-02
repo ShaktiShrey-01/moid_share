@@ -11,6 +11,9 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/devices/presentation/screens/nearby_devices_screen.dart';
+import '../../features/devices/presentation/screens/pair_device_screen.dart';
+import '../../features/devices/presentation/screens/registered_devices_screen.dart';
 import 'route_paths.dart';
 
 /// Bridges a Riverpod provider to a [Listenable] so GoRouter re-evaluates its
@@ -84,6 +87,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.home,
         name: RouteNames.home,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.devices,
+        name: RouteNames.devices,
+        builder: (context, state) => const RegisteredDevicesScreen(),
+        routes: [
+          GoRoute(
+            path: 'pair',
+            name: RouteNames.pairDevice,
+            builder: (context, state) => const PairDeviceScreen(),
+          ),
+          GoRoute(
+            path: 'nearby',
+            name: RouteNames.nearbyDevices,
+            builder: (context, state) => const NearbyDevicesScreen(),
+          ),
+        ],
       ),
     ],
     errorBuilder: (context, state) =>

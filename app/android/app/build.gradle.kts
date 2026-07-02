@@ -6,6 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.moid_share"
+    
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

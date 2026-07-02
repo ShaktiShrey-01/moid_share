@@ -12,6 +12,9 @@ abstract final class RoutePaths {
   static const String forgotPassword = '/forgot-password';
   static const String resetPassword = '/reset-password';
   static const String home = '/home';
+  static const String devices = '/devices';
+  static const String pairDevice = '/devices/pair';
+  static const String nearbyDevices = '/devices/nearby';
 }
 
 abstract final class RouteNames {
@@ -24,6 +27,9 @@ abstract final class RouteNames {
   static const String forgotPassword = 'forgotPassword';
   static const String resetPassword = 'resetPassword';
   static const String home = 'home';
+  static const String devices = 'devices';
+  static const String pairDevice = 'pairDevice';
+  static const String nearbyDevices = 'nearbyDevices';
 }
 
 /// Routes reachable while signed OUT. Everything else requires authentication.
