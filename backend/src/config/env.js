@@ -94,6 +94,12 @@ const config = {
     max: int('RATE_LIMIT_MAX', 300),
   },
 
+  google: {
+    // OAuth client id used to verify Google ID tokens. Empty disables Google
+    // sign-in (the endpoint responds 501 Not Implemented until configured).
+    clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+  },
+
   logging: {
     level: process.env.LOG_LEVEL ?? (isProd ? 'info' : 'debug'),
     // morgan format: 'combined' in prod, 'dev' otherwise.
