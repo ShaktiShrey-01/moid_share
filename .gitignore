@@ -1,0 +1,32 @@
+# ── Root .gitignore (monorepo) ───────────────────────────────────────────
+# Flutter/Dart artifacts are handled by app/.gitignore. This file covers the
+# repo root and the backend.
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.log
+
+# Environment & secrets — NEVER commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Node.js backend
+backend/node_modules/
+backend/dist/
+backend/coverage/
+backend/.env
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+build/
+*.tsbuildinfo
+
+# Claude local settings (per-user)
+.claude/settings.local.json
