@@ -1,0 +1,99 @@
+name: moid_share
+description: "Moid-Share — secure, high-speed file sharing and clipboard sync between Android and macOS."
+# Private package: never publish to pub.dev.
+publish_to: 'none'
+
+# version: <build-name>+<build-number>
+# build-name  -> Android versionName / iOS CFBundleShortVersionString
+# build-number-> Android versionCode / iOS CFBundleVersion
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+# ---------------------------------------------------------------------------
+# Runtime dependencies.
+# Each package is chosen deliberately; rationale documented in
+# docs/adr/0001-foundation-architecture.md. Keep this list minimal and grouped.
+# ---------------------------------------------------------------------------
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # -- UI ------------------------------------------------------------------
+  cupertino_icons: ^1.0.8   # iOS-style glyphs for cross-platform parity.
+  lottie: ^3.4.0            # Vector animations for premium empty/loading states.
+
+  # -- State management & dependency injection -----------------------------
+  # Riverpod is compile-safe, testable, and decoupled from BuildContext.
+  # It doubles as our DI container (providers = injectable singletons/factories).
+  flutter_riverpod: ^3.3.2
+  riverpod_annotation: ^4.0.3
+
+  # -- Routing --------------------------------------------------------------
+  # Declarative, URL-based routing with redirect guards for auth gating and
+  # deep links (required for the Android share-sheet entry point).
+  go_router: ^17.3.0
+
+  # -- Networking -----------------------------------------------------------
+  # Dio gives us interceptors (JWT attach + refresh), request cancellation,
+  # and upload/download progress — all needed by the transfer layer.
+  dio: ^5.10.0
+
+  # -- Local persistence ----------------------------------------------------
+  # hive_ce is the maintained community fork of Hive (original is abandoned).
+  # Used for non-sensitive cache: settings, device list, transfer history.
+  hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
+  # Keystore/Keychain-backed storage — JWTs and other secrets ONLY.
+  flutter_secure_storage: ^10.3.1
+
+  # -- Serialization & immutable models ------------------------------------
+  # freezed = immutable data classes + sealed unions (exhaustive state).
+  # json_annotation = codegen for JSON (de)serialization of DTOs.
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
+
+  # -- Platform / device introspection -------------------------------------
+  connectivity_plus: ^7.2.0   # Offline detection & reactive connectivity stream.
+  device_info_plus: ^13.2.0   # Stable device identity for registration/pairing.
+  package_info_plus: ^10.2.0  # App version for diagnostics / update prompts.
+
+  # -- Utilities ------------------------------------------------------------
+  logger: ^2.7.0   # Structured, level-based logging (wrapped by core/log).
+  intl: ^0.20.3    # Date/number formatting & localization scaffolding.
+
+# ---------------------------------------------------------------------------
+# Development-only dependencies (never shipped in the app binary).
+# ---------------------------------------------------------------------------
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0        # Baseline recommended lint set.
+
+  # Code generation toolchain (freezed / json / riverpod).
+  build_runner: ^2.15.0
+  freezed: ^3.2.6-dev.1
+  json_serializable: ^6.14.0
+  riverpod_generator: ^4.0.4
+
+# ---------------------------------------------------------------------------
+# Flutter tooling configuration.
+# ---------------------------------------------------------------------------
+flutter:
+  uses-material-design: true
+
+  # Asset roots. Folders are committed with a .gitkeep until populated.
+  assets:
+    - assets/images/
+    - assets/animations/
+    - assets/i18n/
+
+  # Custom fonts are declared here once font files are added, e.g.:
+  # fonts:
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/Inter-Regular.ttf
+  #       - asset: assets/fonts/Inter-Medium.ttf
+  #         weight: 500
