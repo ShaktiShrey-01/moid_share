@@ -1,0 +1,20 @@
+# Local development MongoDB for the Moid-Share backend.
+# Usage: `docker compose up -d`  then set MONGODB_URI accordingly (default below
+# matches backend/.env.example). Data persists in the named volume.
+services:
+  mongo:
+    image: mongo:7
+    container_name: moidshare-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - moidshare_mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  moidshare_mongo_data:
