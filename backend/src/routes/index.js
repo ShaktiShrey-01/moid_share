@@ -2,6 +2,7 @@ import { Router } from 'express';
 import config from '../config/env.js';
 import healthRoutes from './health.routes.js';
 import authRoutes from './auth.routes.js';
+import deviceRoutes from './device.routes.js';
 
 /**
  * Mounts all versioned feature routers under the configured API prefix.
@@ -16,6 +17,7 @@ export default function registerRoutes(app) {
 
   v1.use('/health', healthRoutes);
   v1.use('/auth', authRoutes);
+  v1.use('/devices', deviceRoutes);
   // v1.use('/users', userRoutes);     // Step 3+
   // v1.use('/devices', deviceRoutes); // later
 
