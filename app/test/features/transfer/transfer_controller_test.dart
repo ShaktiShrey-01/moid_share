@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moid_share/core/platform/platform_seams.dart';
 import 'package:moid_share/core/notifications/notification_providers.dart';
 import 'package:moid_share/core/notifications/notification_service.dart';
 import 'package:moid_share/core/permissions/app_permission.dart';
@@ -68,15 +69,26 @@ class _FakeTransferRepository implements TransferRepository {
   final List<TransferItem> _history;
   final _offers = StreamController<TransferOffer>.broadcast();
   final _progress = StreamController<TransferItem>.broadcast();
+  final _shares = StreamController<PickedFile>.broadcast();
 
   TransferItem sendResult = _item('f1', TransferStatus.offered);
   TransferOffer? accepted;
   TransferOffer? rejected;
   String? cancelledId;
+  PickedFile? sharedSent;
   bool cleared = false;
 
   @override
   Future<TransferItem> sendFile() async => sendResult;
+
+  @override
+  Future<TransferItem> sendSharedFile(PickedFile file) async {
+    sharedSent = file;
+    return _item(file.name, TransferStatus.offered);
+  }
+
+  @override
+  Stream<PickedFile> sharedFiles() => _shares.stream;
 
   @override
   Future<TransferItem> accept(TransferOffer offer) async {
@@ -113,6 +125,7 @@ class _FakeTransferRepository implements TransferRepository {
   // test helpers
   void pushOffer(TransferOffer o) => _offers.add(o);
   void pushProgress(TransferItem t) => _progress.add(t);
+  void pushShare(PickedFile f) => _shares.add(f);
 
   static TransferItem _fromOffer(TransferOffer o, TransferStatus s) =>
       TransferItem(
@@ -245,6 +258,18 @@ void main() {
     // Terminal transfer: completion notice + service stopped (none left active).
     expect(notifications.calls, contains('complete:${'x'.hashCode & 0x7fffffff}'));
     expect(notifications.serviceRunning, isFalse);
+  });
+
+  test('a shared file is offered automatically', () async {
+    final container = makeContainer();
+    container.read(transferControllerProvider);
+    await Future<void>.delayed(Duration.zero);
+
+    repo.pushShare(const PickedFile(id: 'u1', name: 'photo.jpg', size: 500));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(repo.sharedSent?.name, 'photo.jpg');
+    expect(container.read(transferControllerProvider).notice, contains('photo.jpg'));
   });
 
   test('clearHistory empties history via the repo', () async {

@@ -57,18 +57,23 @@ class TransferManager {
   Future<TransferItem?> pickAndOffer() async {
     final picked = await _sender.pickFile();
     if (picked == null) return null; // user cancelled
+    return offerFile(picked);
+  }
 
+  /// Offers an already-resolved [file] (from the picker or the share sheet) to
+  /// the user's other devices. Shared entry point for both send paths.
+  Future<TransferItem> offerFile(PickedFile file) async {
     final item = TransferItem(
       id: _newId(),
-      fileName: picked.name,
-      size: picked.size,
-      contentType: picked.contentType,
+      fileName: file.name,
+      size: file.size,
+      contentType: file.contentType,
       direction: TransferDirection.outgoing,
       status: TransferStatus.offered,
       createdAt: DateTime.now(),
     );
     _emit(item);
-    _pendingFiles[item.id] = picked;
+    _pendingFiles[item.id] = file;
 
     final acked = await _signaling.offer(
       transferId: item.id,

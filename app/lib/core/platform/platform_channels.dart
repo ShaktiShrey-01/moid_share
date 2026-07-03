@@ -35,4 +35,7 @@ abstract final class PlatformChannels {
 
   /// Emits transfer progress/lifecycle events.
   static const String transferEvents = '$_base/transfer/events';
+
+  /// Emits files handed to the app via the Android share sheet (ACTION_SEND).
+  static const String shareEvents = '$_base/share/events';
 }

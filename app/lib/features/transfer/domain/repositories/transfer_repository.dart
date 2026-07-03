@@ -1,3 +1,4 @@
+import '../../../../core/platform/platform_seams.dart';
 import '../entities/transfer_item.dart';
 import '../entities/transfer_offer.dart';
 
@@ -15,6 +16,12 @@ abstract interface class TransferRepository {
   /// Offers a picked file to the user's other devices. Emits progress via
   /// [progress]; returns the created [TransferItem] (status [TransferStatus.offered]).
   Future<TransferItem> sendFile();
+
+  /// Offers an already-resolved [file] (e.g. from the Android share sheet).
+  Future<TransferItem> sendSharedFile(PickedFile file);
+
+  /// Files handed to the app via the OS share sheet.
+  Stream<PickedFile> sharedFiles();
 
   /// Accepts an incoming [offer] and begins receiving over the native seam.
   Future<TransferItem> accept(TransferOffer offer);

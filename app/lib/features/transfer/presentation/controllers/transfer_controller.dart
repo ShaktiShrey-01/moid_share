@@ -19,12 +19,14 @@ import 'transfer_state.dart';
 class TransferController extends Notifier<TransferState> {
   StreamSubscription<TransferOffer>? _offerSub;
   StreamSubscription<TransferItem>? _progressSub;
+  StreamSubscription<Object?>? _shareSub;
 
   @override
   TransferState build() {
     ref.onDispose(() {
       _offerSub?.cancel();
       _progressSub?.cancel();
+      _shareSub?.cancel();
     });
     _listen();
     Future.microtask(_loadHistory);
@@ -43,6 +45,13 @@ class TransferController extends Notifier<TransferState> {
       if (ref.mounted) state = state.copyWith(pendingOffer: offer);
     });
     _progressSub = repo.progress().listen(_onProgress);
+    // Files handed in via the Android share sheet are offered immediately.
+    _shareSub = repo.sharedFiles().listen((file) async {
+      final item = await repo.sendSharedFile(file);
+      if (ref.mounted && item.status != TransferStatus.failed) {
+        state = state.copyWith(notice: 'Sharing "${item.fileName}"');
+      }
+    });
   }
 
   void _onProgress(TransferItem item) {

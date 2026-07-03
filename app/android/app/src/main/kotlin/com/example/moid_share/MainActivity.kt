@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.OpenableColumns
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -39,6 +40,7 @@ class MainActivity : FlutterActivity() {
         const val TRANSFER_METHODS = "com.moidshare/transfer/methods"
         const val TRANSFER_EVENTS = "com.moidshare/transfer/events"
         const val SYSTEM_METHODS = "com.moidshare/system/methods"
+        const val SHARE_EVENTS = "com.moidshare/share/events"
         const val PICK_FILE_REQUEST = 0x9001
     }
 
@@ -53,6 +55,10 @@ class MainActivity : FlutterActivity() {
     /** Sink for native transfer progress events (receive side). */
     private var transferEvents: EventChannel.EventSink? = null
 
+    /** Sink for files handed in via the share sheet, plus a pre-listener queue. */
+    private var shareEvents: EventChannel.EventSink? = null
+    private val pendingShares = mutableListOf<Map<String, Any>>()
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val messenger = flutterEngine.dartExecutor.binaryMessenger
@@ -60,6 +66,71 @@ class MainActivity : FlutterActivity() {
         configureClipboard(messenger)
         configureTransfer(messenger)
         configureSystem(messenger)
+        configureShare(messenger)
+
+        // Handle a file the app was launched with (cold start via share sheet).
+        handleShareIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // Warm start: app already running when the user shares a file.
+        handleShareIntent(intent)
+    }
+
+    // -- Share sheet ---------------------------------------------------------
+
+    private fun configureShare(messenger: io.flutter.plugin.common.BinaryMessenger) {
+        EventChannel(messenger, SHARE_EVENTS).setStreamHandler(
+            object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    shareEvents = events
+                    // Flush anything shared before Dart subscribed.
+                    pendingShares.forEach { events?.success(it) }
+                    pendingShares.clear()
+                }
+
+                override fun onCancel(arguments: Any?) {
+                    shareEvents = null
+                }
+            },
+        )
+    }
+
+    private fun handleShareIntent(intent: Intent?) {
+        if (intent == null) return
+        val uris: List<Uri> = when (intent.action) {
+            Intent.ACTION_SEND -> {
+                val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                }
+                listOfNotNull(uri)
+            }
+            Intent.ACTION_SEND_MULTIPLE -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM)
+                } ?: emptyList()
+            }
+            else -> return
+        }
+        for (uri in uris) {
+            try {
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                )
+            } catch (_: SecurityException) {
+                // Transient read still works for this session.
+            }
+            val described = describeFile(uri)
+            shareEvents?.success(described) ?: pendingShares.add(described)
+        }
     }
 
     // -- System (notifications + foreground service) -------------------------

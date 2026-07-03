@@ -49,6 +49,18 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="moidshare"/>
             </intent-filter>
+            <!-- Android share sheet: receive files sent from other apps and
+                 offer them to the user's other devices. -->
+            <intent-filter android:label="Send with Moid-Share">
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="*/*"/>
+            </intent-filter>
+            <intent-filter android:label="Send with Moid-Share">
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="*/*"/>
+            </intent-filter>
         </activity>
         <!-- Keeps user-initiated transfers alive while backgrounded. -->
         <service

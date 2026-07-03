@@ -7,6 +7,7 @@ import '../../../core/storage/storage_providers.dart';
 import '../domain/repositories/transfer_repository.dart';
 import '../presentation/controllers/transfer_controller.dart';
 import '../presentation/controllers/transfer_state.dart';
+import 'datasources/share_bridge.dart';
 import 'datasources/transfer_bridge.dart';
 import 'datasources/transfer_local_datasource.dart';
 import 'managers/connection_manager.dart';
@@ -26,6 +27,10 @@ final transferSenderBridgeProvider = Provider<TransferSenderBridge>(
 
 final transferReceiverBridgeProvider = Provider<TransferReceiverBridge>(
   (ref) => MethodChannelTransferReceiverBridge(),
+);
+
+final shareBridgeProvider = Provider<ShareBridge>(
+  (ref) => MethodChannelShareBridge(),
 );
 
 final discoveryBridgeProvider = Provider<DiscoveryBridge>(
@@ -76,6 +81,7 @@ final transferRepositoryProvider = Provider<TransferRepository>((ref) {
     transferManager: ref.watch(transferManagerProvider),
     signalingManager: ref.watch(transferSocketManagerProvider),
     localDataSource: ref.watch(transferLocalDataSourceProvider),
+    shareBridge: ref.watch(shareBridgeProvider),
   );
   ref.onDispose(repo.dispose);
   return repo;
