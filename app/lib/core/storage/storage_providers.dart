@@ -34,3 +34,10 @@ final transferHistoryStoreProvider = Provider<KeyValueStore>(
     'transferHistoryStoreProvider must be overridden in bootstrap with the box',
   ),
 );
+
+/// Local clipboard history. Overridden at bootstrap.
+final clipboardStoreProvider = Provider<KeyValueStore>(
+  (ref) => throw UnimplementedError(
+    'clipboardStoreProvider must be overridden in bootstrap with the box',
+  ),
+);

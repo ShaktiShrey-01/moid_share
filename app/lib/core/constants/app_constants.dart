@@ -33,6 +33,7 @@ abstract final class HiveBoxes {
   static const String settings = 'settings_box';
   static const String devices = 'devices_box';
   static const String transferHistory = 'transfer_history_box';
+  static const String clipboard = 'clipboard_box';
 }
 
 /// Asset paths. Keeping these in one place prevents typos at call sites.

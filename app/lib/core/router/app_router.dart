@@ -11,6 +11,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/clipboard/presentation/screens/clipboard_screen.dart';
 import '../../features/devices/presentation/screens/nearby_devices_screen.dart';
 import '../../features/devices/presentation/screens/pair_device_screen.dart';
 import '../../features/devices/presentation/screens/registered_devices_screen.dart';
@@ -104,6 +105,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const NearbyDevicesScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: RoutePaths.clipboard,
+        name: RouteNames.clipboard,
+        builder: (context, state) => const ClipboardScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

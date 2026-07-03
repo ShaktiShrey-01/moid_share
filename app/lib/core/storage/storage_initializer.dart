@@ -22,11 +22,13 @@ class StorageInitializer {
     final settings = await Hive.openBox<dynamic>(HiveBoxes.settings);
     final devices = await Hive.openBox<dynamic>(HiveBoxes.devices);
     final history = await Hive.openBox<dynamic>(HiveBoxes.transferHistory);
+    final clipboard = await Hive.openBox<dynamic>(HiveBoxes.clipboard);
 
     return OpenedBoxes(
       settings: settings,
       devices: devices,
       transferHistory: history,
+      clipboard: clipboard,
     );
   }
 }
@@ -37,9 +39,11 @@ class OpenedBoxes {
     required this.settings,
     required this.devices,
     required this.transferHistory,
+    required this.clipboard,
   });
 
   final Box<dynamic> settings;
   final Box<dynamic> devices;
   final Box<dynamic> transferHistory;
+  final Box<dynamic> clipboard;
 }

@@ -63,6 +63,13 @@ class HomeScreen extends ConsumerWidget {
             subtitle: 'Discover devices on your network',
             onTap: () => context.pushNamed(RouteNames.nearbyDevices),
           ),
+          const SizedBox(height: AppSpacing.md),
+          _DashboardCard(
+            icon: Icons.content_paste_outlined,
+            title: 'Clipboard sync',
+            subtitle: 'Share clipboard across your devices',
+            onTap: () => context.pushNamed(RouteNames.clipboard),
+          ),
         ],
       ),
     );

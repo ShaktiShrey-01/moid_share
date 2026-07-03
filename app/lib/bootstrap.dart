@@ -53,6 +53,8 @@ Future<void> bootstrap() async {
                 .overrideWithValue(HiveKeyValueStore(boxes.devices)),
             transferHistoryStoreProvider
                 .overrideWithValue(HiveKeyValueStore(boxes.transferHistory)),
+            clipboardStoreProvider
+                .overrideWithValue(HiveKeyValueStore(boxes.clipboard)),
             // Plug the auth feature into the core seams:
             authTokenStoreProvider
                 .overrideWith((ref) => ref.watch(apiAuthTokenStoreProvider)),
