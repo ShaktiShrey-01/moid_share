@@ -2,7 +2,7 @@
   "name": "moid-share-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "Moid-Share backend \u2014 Express + MongoDB API and Socket.IO realtime. Stores user information only.",
+  "description": "Moid-Share backend — Express + MongoDB API and Socket.IO realtime. Stores user information only.",
   "type": "module",
   "engines": {
     "node": ">=20"
