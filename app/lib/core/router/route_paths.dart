@@ -16,6 +16,7 @@ abstract final class RoutePaths {
   static const String pairDevice = '/devices/pair';
   static const String nearbyDevices = '/devices/nearby';
   static const String clipboard = '/clipboard';
+  static const String transfers = '/transfers';
 }
 
 abstract final class RouteNames {
@@ -32,6 +33,7 @@ abstract final class RouteNames {
   static const String pairDevice = 'pairDevice';
   static const String nearbyDevices = 'nearbyDevices';
   static const String clipboard = 'clipboard';
+  static const String transfers = 'transfers';
 }
 
 /// Routes reachable while signed OUT. Everything else requires authentication.

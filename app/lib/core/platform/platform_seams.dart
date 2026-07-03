@@ -101,3 +101,36 @@ abstract interface class TransferReceiverBridge {
   /// Emits progress/lifecycle events for all active transfers.
   Stream<TransferProgress> progress();
 }
+
+/// A file the user selected to send, described platform-neutrally.
+///
+/// [id] is an opaque native handle (an Android `content://` URI, a macOS
+/// security-scoped bookmark, etc.) — never assume it is a filesystem path.
+/// Bytes are read back through [TransferSenderBridge.openRead].
+class PickedFile {
+  const PickedFile({
+    required this.id,
+    required this.name,
+    required this.size,
+    this.contentType = 'application/octet-stream',
+  });
+
+  final String id;
+  final String name;
+  final int size;
+  final String contentType;
+}
+
+/// Native file-access seam for the **sending** side.
+///
+/// Picking a file and streaming its bytes must go through the platform: on
+/// Android a chosen file is a `content://` URI (no real path), so only native
+/// code can open and read it. Android implements this in Kotlin; macOS will
+/// implement the same contract in Swift (`NSOpenPanel` + bookmarks) later.
+abstract interface class TransferSenderBridge {
+  /// Opens the native file picker. Returns `null` if the user cancels.
+  Future<PickedFile?> pickFile();
+
+  /// Streams the bytes of a previously [pickFile]ed file in [chunkSize] blocks.
+  Stream<List<int>> openRead(String fileId, {int chunkSize});
+}

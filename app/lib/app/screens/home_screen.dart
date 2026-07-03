@@ -70,6 +70,13 @@ class HomeScreen extends ConsumerWidget {
             subtitle: 'Share clipboard across your devices',
             onTap: () => context.pushNamed(RouteNames.clipboard),
           ),
+          const SizedBox(height: AppSpacing.md),
+          _DashboardCard(
+            icon: Icons.swap_vert_rounded,
+            title: 'Transfers',
+            subtitle: 'Send files and view transfer history',
+            onTap: () => context.pushNamed(RouteNames.transfers),
+          ),
         ],
       ),
     );

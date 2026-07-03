@@ -64,6 +64,7 @@ dependencies:
   intl: ^0.20.3    # Date/number formatting & localization scaffolding.
   google_sign_in: ^7.2.0
   socket_io_client: ^3.1.6
+  cryptography: ^2.7.0   # AES-GCM per-transfer encryption (pure-Dart, portable).
 
 # ---------------------------------------------------------------------------
 # Development-only dependencies (never shipped in the app binary).
