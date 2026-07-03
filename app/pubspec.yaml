@@ -19,6 +19,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Localized Material/Cupertino/Widgets strings + gen-l10n runtime support.
+  flutter_localizations:
+    sdk: flutter
 
   # -- UI ------------------------------------------------------------------
   cupertino_icons: ^1.0.8   # iOS-style glyphs for cross-platform parity.
@@ -61,7 +64,7 @@ dependencies:
 
   # -- Utilities ------------------------------------------------------------
   logger: ^2.7.0   # Structured, level-based logging (wrapped by core/log).
-  intl: ^0.20.3    # Date/number formatting & localization scaffolding.
+  intl: ^0.20.2    # Date/number formatting & localization (pinned by flutter_localizations).
   google_sign_in: ^7.2.0
   socket_io_client: ^3.1.6
   cryptography: ^2.7.0   # AES-GCM per-transfer encryption (pure-Dart, portable).
@@ -87,6 +90,9 @@ dev_dependencies:
 # ---------------------------------------------------------------------------
 flutter:
   uses-material-design: true
+
+  # Generate AppLocalizations from the ARB files (see l10n.yaml).
+  generate: true
 
   # Asset roots. Folders are committed with a .gitkeep until populated.
   assets:

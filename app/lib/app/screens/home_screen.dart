@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/constants/app_constants.dart';
 import '../../core/router/route_paths.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../features/auth/data/auth_providers.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Authenticated dashboard. Surfaces the primary features as cards; each opens
 /// the relevant screen. Transfer/clipboard cards arrive with those features.
@@ -15,19 +15,20 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final user = ref.watch(authControllerProvider).user;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppConstants.appName),
+        title: Text(l10n.appName),
         actions: [
           IconButton(
-            tooltip: 'Settings',
+            tooltip: l10n.actionSettings,
             onPressed: () => context.pushNamed(RouteNames.settings),
             icon: const Icon(Icons.settings_outlined),
           ),
           IconButton(
-            tooltip: 'Sign out',
+            tooltip: l10n.actionSignOut,
             onPressed: () => ref.read(authControllerProvider.notifier).logout(),
             icon: const Icon(Icons.logout_outlined),
           ),
@@ -37,12 +38,12 @@ class HomeScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
           Text(
-            user == null ? 'Welcome' : 'Welcome, ${user.name}',
+            user == null ? l10n.homeWelcome : l10n.homeWelcomeNamed(user.name),
             style: theme.textTheme.headlineMedium,
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Manage your devices and connections.',
+            l10n.homeSubtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -50,36 +51,36 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(height: AppSpacing.xl),
           _DashboardCard(
             icon: Icons.devices_outlined,
-            title: 'Registered devices',
-            subtitle: 'View and manage your devices',
+            title: l10n.cardDevicesTitle,
+            subtitle: l10n.cardDevicesSubtitle,
             onTap: () => context.pushNamed(RouteNames.devices),
           ),
           const SizedBox(height: AppSpacing.md),
           _DashboardCard(
             icon: Icons.add_link,
-            title: 'Pair a device',
-            subtitle: 'Link this device with another by code',
+            title: l10n.cardPairTitle,
+            subtitle: l10n.cardPairSubtitle,
             onTap: () => context.pushNamed(RouteNames.pairDevice),
           ),
           const SizedBox(height: AppSpacing.md),
           _DashboardCard(
             icon: Icons.wifi_tethering,
-            title: 'Nearby devices',
-            subtitle: 'Discover devices on your network',
+            title: l10n.cardNearbyTitle,
+            subtitle: l10n.cardNearbySubtitle,
             onTap: () => context.pushNamed(RouteNames.nearbyDevices),
           ),
           const SizedBox(height: AppSpacing.md),
           _DashboardCard(
             icon: Icons.content_paste_outlined,
-            title: 'Clipboard sync',
-            subtitle: 'Share clipboard across your devices',
+            title: l10n.cardClipboardTitle,
+            subtitle: l10n.cardClipboardSubtitle,
             onTap: () => context.pushNamed(RouteNames.clipboard),
           ),
           const SizedBox(height: AppSpacing.md),
           _DashboardCard(
             icon: Icons.swap_vert_rounded,
-            title: 'Transfers',
-            subtitle: 'Send files and view transfer history',
+            title: l10n.cardTransfersTitle,
+            subtitle: l10n.cardTransfersSubtitle,
             onTap: () => context.pushNamed(RouteNames.transfers),
           ),
         ],

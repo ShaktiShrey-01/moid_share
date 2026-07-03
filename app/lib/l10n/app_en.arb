@@ -1,0 +1,34 @@
+{
+  "@@locale": "en",
+  "appName": "Moid-Share",
+  "@appName": {
+    "description": "The application name."
+  },
+  "homeWelcome": "Welcome",
+  "@homeWelcome": {
+    "description": "Home greeting when the user's name is unknown."
+  },
+  "homeWelcomeNamed": "Welcome, {name}",
+  "@homeWelcomeNamed": {
+    "description": "Home greeting with the user's name.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alex"
+      }
+    }
+  },
+  "homeSubtitle": "Manage your devices and connections.",
+  "cardDevicesTitle": "Registered devices",
+  "cardDevicesSubtitle": "View and manage your devices",
+  "cardPairTitle": "Pair a device",
+  "cardPairSubtitle": "Link this device with another by code",
+  "cardNearbyTitle": "Nearby devices",
+  "cardNearbySubtitle": "Discover devices on your network",
+  "cardClipboardTitle": "Clipboard sync",
+  "cardClipboardSubtitle": "Share clipboard across your devices",
+  "cardTransfersTitle": "Transfers",
+  "cardTransfersSubtitle": "Send files and view transfer history",
+  "actionSettings": "Settings",
+  "actionSignOut": "Sign out"
+}

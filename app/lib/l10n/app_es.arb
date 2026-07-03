@@ -1,0 +1,19 @@
+{
+  "@@locale": "es",
+  "appName": "Moid-Share",
+  "homeWelcome": "Bienvenido",
+  "homeWelcomeNamed": "Bienvenido, {name}",
+  "homeSubtitle": "Gestiona tus dispositivos y conexiones.",
+  "cardDevicesTitle": "Dispositivos registrados",
+  "cardDevicesSubtitle": "Ver y gestionar tus dispositivos",
+  "cardPairTitle": "Vincular un dispositivo",
+  "cardPairSubtitle": "Vincula este dispositivo con otro mediante un código",
+  "cardNearbyTitle": "Dispositivos cercanos",
+  "cardNearbySubtitle": "Descubre dispositivos en tu red",
+  "cardClipboardTitle": "Sincronización del portapapeles",
+  "cardClipboardSubtitle": "Comparte el portapapeles entre tus dispositivos",
+  "cardTransfersTitle": "Transferencias",
+  "cardTransfersSubtitle": "Envía archivos y consulta el historial",
+  "actionSettings": "Ajustes",
+  "actionSignOut": "Cerrar sesión"
+}

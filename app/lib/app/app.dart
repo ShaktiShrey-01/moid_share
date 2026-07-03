@@ -5,6 +5,7 @@ import '../core/constants/app_constants.dart';
 import '../core/router/app_router.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_controller.dart';
+import '../l10n/app_localizations.dart';
 
 /// Root widget: wires the router and the light/dark themes into
 /// [MaterialApp.router].
@@ -25,6 +26,8 @@ class MoidShareApp extends ConsumerWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: router,
     );
   }
