@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -36,6 +38,7 @@ class MainActivity : FlutterActivity() {
         const val CLIP_EVENTS = "com.moidshare/clipboard/events"
         const val TRANSFER_METHODS = "com.moidshare/transfer/methods"
         const val TRANSFER_EVENTS = "com.moidshare/transfer/events"
+        const val SYSTEM_METHODS = "com.moidshare/system/methods"
         const val PICK_FILE_REQUEST = 0x9001
     }
 
@@ -56,6 +59,62 @@ class MainActivity : FlutterActivity() {
 
         configureClipboard(messenger)
         configureTransfer(messenger)
+        configureSystem(messenger)
+    }
+
+    // -- System (notifications + foreground service) -------------------------
+
+    private fun configureSystem(messenger: io.flutter.plugin.common.BinaryMessenger) {
+        MethodChannel(messenger, SYSTEM_METHODS).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "showProgress" -> {
+                    val id = (call.argument<Number>("id") ?: 0).toInt()
+                    val notification = NotificationHelper.buildProgress(
+                        this,
+                        title = call.argument<String>("title") ?: "Transfer",
+                        text = call.argument<String>("text") ?: "",
+                        progress = (call.argument<Number>("progress") ?: 0).toInt(),
+                        max = (call.argument<Number>("max") ?: 0).toInt(),
+                        indeterminate = call.argument<Boolean>("indeterminate") ?: false,
+                    )
+                    notifyIfAllowed(id, notification)
+                    result.success(null)
+                }
+                "complete" -> {
+                    val id = (call.argument<Number>("id") ?: 0).toInt()
+                    val notification = NotificationHelper.buildDone(
+                        this,
+                        title = call.argument<String>("title") ?: "Transfer",
+                        text = call.argument<String>("text") ?: "",
+                    )
+                    notifyIfAllowed(id, notification)
+                    result.success(null)
+                }
+                "cancel" -> {
+                    val id = (call.argument<Number>("id") ?: 0).toInt()
+                    NotificationManagerCompat.from(this).cancel(id)
+                    result.success(null)
+                }
+                "startTransferService" -> {
+                    ContextCompat.startForegroundService(
+                        this,
+                        Intent(this, TransferForegroundService::class.java),
+                    )
+                    result.success(null)
+                }
+                "stopTransferService" -> {
+                    stopService(Intent(this, TransferForegroundService::class.java))
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
+    }
+
+    /** Posts a notification only when the runtime POST_NOTIFICATIONS grant holds. */
+    private fun notifyIfAllowed(id: Int, notification: android.app.Notification) {
+        val manager = NotificationManagerCompat.from(this)
+        if (manager.areNotificationsEnabled()) manager.notify(id, notification)
     }
 
     // -- Clipboard -----------------------------------------------------------

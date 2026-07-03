@@ -44,3 +44,9 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // NotificationCompat / ServiceCompat / ContextCompat for version-safe
+    // notifications and foreground-service handling across API levels.
+    implementation("androidx.core:core-ktx:1.13.1")
+}

@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/notifications/notification_providers.dart';
+import '../../../../core/permissions/app_permission.dart';
+import '../../../../core/permissions/permission_providers.dart';
 import '../../data/transfer_providers.dart';
 import '../../domain/entities/transfer_item.dart';
 import '../../domain/entities/transfer_offer.dart';
@@ -56,6 +59,42 @@ class TransferController extends Notifier<TransferState> {
       history: item.isTerminal
           ? [item, for (final h in state.history) if (h.id != item.id) h]
           : null,
+    );
+    _notify(item, activeCount: active.length);
+  }
+
+  /// Mirrors a transfer's progress into a system notification and keeps the
+  /// foreground service running while any transfer is active.
+  Future<void> _notify(TransferItem item, {required int activeCount}) async {
+    final notifications = ref.read(notificationServiceProvider);
+    final id = item.id.hashCode & 0x7fffffff;
+    final name = item.fileName.isEmpty ? 'File' : item.fileName;
+
+    if (item.isTerminal) {
+      final ok = item.status == TransferStatus.completed;
+      await notifications.complete(
+        id: id,
+        title: ok ? 'Transfer complete' : 'Transfer ${item.status.name}',
+        text: name,
+      );
+      if (activeCount == 0) await notifications.stopTransferService();
+      return;
+    }
+
+    // Ensure we're allowed to post before starting the ongoing notification.
+    await ref
+        .read(permissionServiceProvider)
+        .request(AppPermission.notifications);
+    await notifications.startTransferService();
+    await notifications.showProgress(
+      id: id,
+      title: 'Sending $name',
+      text: '${(item.progress * 100).round()}%',
+      progress: item.bytesTransferred,
+      max: item.size == 0 ? 0 : item.size,
+      indeterminate: item.size == 0 ||
+          item.status == TransferStatus.offered ||
+          item.status == TransferStatus.accepted,
     );
   }
 

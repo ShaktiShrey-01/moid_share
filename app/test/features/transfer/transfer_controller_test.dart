@@ -2,10 +2,63 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moid_share/core/notifications/notification_providers.dart';
+import 'package:moid_share/core/notifications/notification_service.dart';
+import 'package:moid_share/core/permissions/app_permission.dart';
+import 'package:moid_share/core/permissions/permission_providers.dart';
+import 'package:moid_share/core/permissions/permission_service.dart';
 import 'package:moid_share/features/transfer/data/transfer_providers.dart';
 import 'package:moid_share/features/transfer/domain/entities/transfer_item.dart';
 import 'package:moid_share/features/transfer/domain/entities/transfer_offer.dart';
 import 'package:moid_share/features/transfer/domain/repositories/transfer_repository.dart';
+
+/// No-op notification service that records the calls the controller makes.
+class _FakeNotifications implements NotificationService {
+  final List<String> calls = [];
+  bool serviceRunning = false;
+
+  @override
+  Future<void> showProgress({
+    required int id,
+    required String title,
+    required String text,
+    int progress = 0,
+    int max = 100,
+    bool indeterminate = false,
+  }) async =>
+      calls.add('progress:$id');
+
+  @override
+  Future<void> complete({
+    required int id,
+    required String title,
+    required String text,
+  }) async =>
+      calls.add('complete:$id');
+
+  @override
+  Future<void> cancel(int id) async => calls.add('cancel:$id');
+
+  @override
+  Future<void> startTransferService() async => serviceRunning = true;
+
+  @override
+  Future<void> stopTransferService() async => serviceRunning = false;
+}
+
+/// Permission service that always grants.
+class _GrantAllPermissions implements PermissionService {
+  @override
+  Future<PermissionOutcome> status(AppPermission permission) async =>
+      PermissionOutcome.granted;
+
+  @override
+  Future<PermissionOutcome> request(AppPermission permission) async =>
+      PermissionOutcome.granted;
+
+  @override
+  Future<bool> openSettings() async => true;
+}
 
 /// Fake repo driving offers/progress via controllers the test can push to.
 class _FakeTransferRepository implements TransferRepository {
@@ -93,16 +146,24 @@ TransferOffer _offer(String id) => TransferOffer(
 
 void main() {
   late _FakeTransferRepository repo;
+  late _FakeNotifications notifications;
 
   ProviderContainer makeContainer() {
     final c = ProviderContainer(
-      overrides: [transferRepositoryProvider.overrideWithValue(repo)],
+      overrides: [
+        transferRepositoryProvider.overrideWithValue(repo),
+        notificationServiceProvider.overrideWithValue(notifications),
+        permissionServiceProvider.overrideWithValue(_GrantAllPermissions()),
+      ],
     );
     addTearDown(c.dispose);
     return c;
   }
 
-  setUp(() => repo = _FakeTransferRepository());
+  setUp(() {
+    repo = _FakeTransferRepository();
+    notifications = _FakeNotifications();
+  });
 
   test('loads history on build', () async {
     repo = _FakeTransferRepository(
@@ -173,12 +234,17 @@ void main() {
     var state = container.read(transferControllerProvider);
     expect(state.active.single.id, 'x');
     expect(state.history, isEmpty);
+    expect(notifications.serviceRunning, isTrue);
+    expect(notifications.calls, contains('progress:${'x'.hashCode & 0x7fffffff}'));
 
     repo.pushProgress(_item('x', TransferStatus.completed));
     await Future<void>.delayed(Duration.zero);
     state = container.read(transferControllerProvider);
     expect(state.active, isEmpty);
     expect(state.history.single.id, 'x');
+    // Terminal transfer: completion notice + service stopped (none left active).
+    expect(notifications.calls, contains('complete:${'x'.hashCode & 0x7fffffff}'));
+    expect(notifications.serviceRunning, isFalse);
   });
 
   test('clearHistory empties history via the repo', () async {
