@@ -22,6 +22,11 @@ class HomeScreen extends ConsumerWidget {
         title: const Text(AppConstants.appName),
         actions: [
           IconButton(
+            tooltip: 'Settings',
+            onPressed: () => context.pushNamed(RouteNames.settings),
+            icon: const Icon(Icons.settings_outlined),
+          ),
+          IconButton(
             tooltip: 'Sign out',
             onPressed: () => ref.read(authControllerProvider.notifier).logout(),
             icon: const Icon(Icons.logout_outlined),

@@ -13,6 +13,8 @@ import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/clipboard/presentation/screens/clipboard_screen.dart';
 import '../../features/transfer/presentation/screens/transfer_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/devices/presentation/screens/nearby_devices_screen.dart';
 import '../../features/devices/presentation/screens/pair_device_screen.dart';
 import '../../features/devices/presentation/screens/registered_devices_screen.dart';
@@ -116,6 +118,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.transfers,
         name: RouteNames.transfers,
         builder: (context, state) => const TransferScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.settings,
+        name: RouteNames.settings,
+        builder: (context, state) => const SettingsScreen(),
+        routes: [
+          GoRoute(
+            path: 'profile',
+            name: RouteNames.profile,
+            builder: (context, state) => const ProfileScreen(),
+          ),
+        ],
       ),
     ],
     errorBuilder: (context, state) =>
